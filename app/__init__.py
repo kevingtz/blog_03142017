@@ -10,7 +10,7 @@ from config import config
 # HERE WE GONNA CREATED THE EXTENSION BUT UNINITIALIZED
 bootstrap = Bootstrap()
 mail = Mail()
-moment = Moment
+moment = Moment()
 db = SQLAlchemy()
 
 
