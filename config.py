@@ -15,8 +15,8 @@ class Config:  # CREATED THE MAIN CONFIG CLASS
     MAIL_USERNAME = 'kazevtrinid@gmail.com'  # THE SENDER EMAIL
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')  # THE PASSWORD PASSING WITH OS
     BLOG_MAIL_SUBJECT_PREFIX = '[MAIL]'  # PREFIX
-    BLOG_MAIL_SENDER = 'BLOG Admin <kevingtz0907@gmail.com>'  # ADMIN MAIL
-    BLOG_ADMIN = 'KEVIN'  # ADMIN
+    BLOG_MAIL_SENDER = 'kazevtrinid@gmail.com'  # ADMIN MAIL
+    BLOG_ADMIN = 'kevingtz0907@gmail.com'  # ADMIN
 
     @staticmethod
     def init_app(app):  # METHOD USE TO INIT THE APP

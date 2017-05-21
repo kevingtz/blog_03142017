@@ -3,11 +3,11 @@
 
 {% block title %}Blog{% endblock %}
 
-{% block content %}
+{% block page_content %}
 <div class="page-header">
     <h1>Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}</h1>
-    {% if not know %}
-    <p>Pleased to meet you</p>
+    {% if not known %}
+    <p>Pleased to meet you!</p>
     {% else %}
     <p>Happy to see you again!</p>
     {% endif %}
