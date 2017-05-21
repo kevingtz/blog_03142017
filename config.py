@@ -19,7 +19,7 @@ class Config:  # CREATED THE MAIN CONFIG CLASS
     BLOG_ADMIN = 'KEVIN'  # ADMIN
 
     @staticmethod
-    def init_app(app):
+    def init_app(app):  # METHOD USE TO INIT THE APP
         pass
 
 
