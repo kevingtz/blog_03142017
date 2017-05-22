@@ -29,20 +29,20 @@ class Config:  # CREATED THE MAIN CONFIG CLASS
 class DevelopmentConfig(Config):  # DEVELOPMENT CONFIG
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
+                              'sqlite:///' + os.path.join(basedir, 'blog_data-dev.sqlite')
 
 
 class TestingConfig(Config):  # TEST CONFIG
     TESTING = True
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
+                              'sqlite:///' + os.path.join(basedir, 'blog_data-test.sqlite')
 
 
 class ProductionConfig(Config):  # PRODUCTION CONFIG
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+                              'sqlite:///' + os.path.join(basedir, 'blog_data.sqlite')
 
 
 # HERE WE ASSIGN THE DIFFERENT CLASSES TO A DICTIONARY IN ORDER TO USE EACH CONFIG CLASS
