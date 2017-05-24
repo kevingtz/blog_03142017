@@ -89,3 +89,4 @@ ENV/
 .ropeproject
 .idea/
 blog_03142017.iml
+.DS_Store
