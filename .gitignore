@@ -90,3 +90,5 @@ ENV/
 .idea/
 blog_03142017.iml
 .DS_Store
+blog_data-dev.sqlite
+*.sqlite
