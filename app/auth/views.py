@@ -11,14 +11,15 @@ from ..email import send_email
 
 
 @auth.before_app_request
-def before_app_request():  # THIS FUNCTION ONLY WORKS WHEN THE NEXT CONDITIONS ARE TRUE:
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
-            and request.endpoint \
-            and request.endpoint[:5] != 'auth.' \
-            and request.endpoint != 'static':  # THE USER IS AUTHENTICATED, THE CURRENT USER IS NOT CONFIRMED,
-        # AND OTHER THAT IN THIS POINT I DONT GET WELL
-        return redirect(url_for('auth.unconfirmed'))
+def before_request():  # THIS FUNCTION ONLY WORKS WHEN THE NEXT CONDITIONS ARE TRUE:
+    if current_user.is_authenticated:
+        current_user.ping()  # HERE WE CALL PING METHOD IN ORDER TO UPDATE THE LAST SEEN USER PROPERTY
+        if not current_user.confirmed \
+                and request.endpoint \
+                and request.endpoint[:5] != 'auth.' \
+                and request.endpoint != 'static':  # THE USER IS AUTHENTICATED, THE CURRENT USER IS NOT CONFIRMED,
+                #  AND OTHER THAT IN THIS POINT I DON'T GET WELL
+            return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')

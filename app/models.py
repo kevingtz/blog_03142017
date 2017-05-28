@@ -1,5 +1,6 @@
 # HERE ARE THE DEFINED MODELS
 
+from datetime import datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
@@ -61,6 +62,14 @@ class User(UserMixin, db.Model):  # THIS IS THE MODEL FOR THE USERS
     password_hash = db.Column(db.String(128))  # THIS DATA WILL BE USE BY THE PASSWORD METHOD IN ORDER TO GENERATE
     # A HASH
     confirmed = db.Column(db.Boolean, default=False)
+    name = db.Column(db.String(64))
+    location = db.Column(db.String(64))
+    about_me = db.Column(db.Text())  # THE DIFFERENCE BETWEEN TEXT FIELD AND STRING FIELD IS THAT TEXT DOES NOT NEED
+    # A MAXIMUM LENGTH
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)  # NOTE THAT IT IS MISSING THE '()' IN UTCNOW
+    # THAT'S BECAUSE THE COLUMN'S ARGUMENT TAKES A FUNCTION AS A DEFAULT VALUE
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)  # SO EACH TIME DEFAULT VALUE NEEDS TO BE GENERATED
+    # THE FUNCTION IS INVOKED TO PRODUCE IT.
 
     def __init__(self, **kwargs):  # ROLE ASSIGNMENT USING THE CURRENT_APP USER EMAIL
         super(User, self).__init__(**kwargs)
@@ -77,6 +86,11 @@ class User(UserMixin, db.Model):  # THIS IS THE MODEL FOR THE USERS
     @password.setter
     def password(self, password):  # THIS METHOD IS USING TO GENERATE THE HASH OF THE PASSWORD
         self.password_hash = generate_password_hash(password)
+
+    def ping(self):  # THIS IS USED IN ORDER TO UPDATE THE LAST SINCE PROPERTY EACH TIME USER COMES. THIS METHOD IS
+        # USED FOR 'BEFORE_APP_REQUEST' TO WORK
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
     def verify_password(self, password):  # THIS METHOD IS TO VALIDATE THAT THE PASSWORD HASH
         # IS A REFERENCE OF THE PASSWORD
