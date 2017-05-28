@@ -2,17 +2,50 @@
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
-from flask_login import UserMixin
+from flask_login import UserMixin, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import db, login_manager
+
+
+class Permission:  # THE DIFFERENT PERMISSIONS AROUND THE BLOG
+    FOLLOW = 0x01
+    COMMENT = 0x02
+    WRITE_ARTICLES = 0x04
+    MODERATE_COMMENTS = 0x08
+    ADMINISTER = 0x80
 
 
 class Role(db.Model):  # THIS IS THE MODEL FOR THE ROLES
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
+    default = db.Column(db.Boolean, default=False, index=True)
+    permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')  # THIS MODEL GONNA BE A RELATION
+
+    @staticmethod
+    def insert_roles():  # UPDATE THE PERMISSIONS OR IF IT DOESNT EXISTS CREATE A NEW ONE
+        roles = {
+            'User': (Permission.FOLLOW |
+                     Permission.COMMENT |
+                     Permission.WRITE_ARTICLES, True),
+            'Moderator': (Permission.FOLLOW |
+                          Permission.COMMENT |
+                          Permission.WRITE_ARTICLES |
+                          Permission.MODERATE_COMMENTS, False),
+            'Administrator': (0xff, False)
+
+        }
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.permissions = roles[r][0]
+            role.default = roles[r][1]
+            db.session.add(role)
+        db.session.commit()
+
 
     def __repr__(self):  # THESE METHOD IS TO REPRESENT THE MODEL IN A STRING
         return '<Role %r>' % self.name
@@ -28,6 +61,14 @@ class User(UserMixin, db.Model):  # THIS IS THE MODEL FOR THE USERS
     password_hash = db.Column(db.String(128))  # THIS DATA WILL BE USE BY THE PASSWORD METHOD IN ORDER TO GENERATE
     # A HASH
     confirmed = db.Column(db.Boolean, default=False)
+
+    def __init__(self, **kwargs):  # ROLE ASSIGNMENT USING THE CURRENT_APP USER EMAIL
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            if self.email == current_app.config['BLOG_ADMIN']:
+                self.role = Role.query.filter_by(permissions=0xff).first()
+            if self.role is None:
+                self.role = Role.query.filter_by(default=True).first()
 
     @property
     def password(self):  # THIS METHOD ASSERT THAT THE PASSWORD IS READABLE
@@ -96,8 +137,24 @@ class User(UserMixin, db.Model):  # THIS IS THE MODEL FOR THE USERS
         db.session.add(self)
         return True
 
+    def can(self, permissions):
+        return self.role is not None and (self.role.permissions & permissions) == permissions
+
+    def is_administrator(self):
+        return self.can(Permission.ADMINISTER)
+
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+class AnonymousUser(AnonymousUserMixin):
+    def can(self, peermissions):
+        return False
+
+    def is_adminstrtor(self):
+        return False
+
+login_manager.anonymous_user = AnonymousUser
 
 
 @login_manager.user_loader
