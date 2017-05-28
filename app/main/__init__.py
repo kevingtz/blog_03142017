@@ -10,3 +10,9 @@ from . import views, errors  # WE IMPORT THIS MODULES CAUSE IS HERE WHERE WE GON
 
 # THESE IMPORTS WERE IMPORT AT THE BOTTOM IN ORDER TO AVOID CIRCULAR DEPENDENCIES.
 
+from ..models import Permission
+
+@main.app_context_processor
+def inject_permissions():
+    return dict(Permission=Permission)
+
