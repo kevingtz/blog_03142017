@@ -152,7 +152,7 @@ class User(UserMixin, db.Model):  # THIS IS THE MODEL FOR THE USERS
         db.session.add(self)
         return True
 
-    def gravatar(self, size=100, default='identicon', rating='g' ):
+    def gravatar(self, size=100, default='identicon', rating='g'):
         if request.is_secure:
             url = 'https://secure.gravatar.com/avatar'
         else:
