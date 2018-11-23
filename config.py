@@ -29,7 +29,7 @@ class Config:  # CREATED THE MAIN CONFIG CLASS
 class DevelopmentConfig(Config):  # DEVELOPMENT CONFIG
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'blog_data-dev.sqlite')
+                              'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES['user'],pw=POSTGRES['pw'],url=POSTGRES['host'],db=POSTGRES['db'])  # THIS NEED A SET OF CONFIGURATION VARIABLES 
 
 
 class TestingConfig(Config):  # TEST CONFIG
@@ -41,9 +41,7 @@ class TestingConfig(Config):  # TEST CONFIG
 
 class ProductionConfig(Config):  # PRODUCTION CONFIG
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'blog_data.sqlite')
-
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
 
 # HERE WE ASSIGN THE DIFFERENT CLASSES TO A DICTIONARY IN ORDER TO USE EACH CONFIG CLASS
 config = {
