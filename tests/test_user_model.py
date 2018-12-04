@@ -13,6 +13,7 @@ class UserModelTestCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
+        Role.insert_roles()
 
     def tearDown(self):
         db.session.remove()
@@ -71,14 +72,12 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(u.verify_password('dog'))
 
     def test_invalid_reset_token(self):
-        u1 = User(password='cat')
-        u2 = User(password='dog')
-        db.session.add(u1)
-        db.session.add(u2)
+        u = User(password='cat')
+        db.session.add(u)
         db.session.commit()
-        token = u1.generate_reset_token()
-        self.assertFalse(u2.reset_password(token, 'horse'))
-        self.assertTrue(u2.verify_password('dog'))
+        token = u.generate_reset_token()
+        self.assertFalse(User.reset_password(token + 'a', 'horse'))
+        self.assertTrue(u.verify_password('cat'))
 
     def test_valid_email_change_token(self):
         u = User(email='john@example.com', password='cat')
@@ -108,15 +107,39 @@ class UserModelTestCase(unittest.TestCase):
         self.assertFalse(u2.change_email(token))
         self.assertTrue(u2.email == 'susan@example.org')
 
-    def test_roles_and_permissions(self):
-        Role.insert_roles()
+    def test_user_role(self):
         u = User(email='john@example.com', password='cat')
-        self.assertTrue(u.can(Permission.WRITE_ARTICLES))
-        self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
+        self.assertTrue(u.can(Permission.FOLLOW))
+        self.assertTrue(u.can(Permission.COMMENT))
+        self.assertTrue(u.can(Permission.WRITE))
+        self.assertFalse(u.can(Permission.MODERATE))
+        self.assertFalse(u.can(Permission.ADMIN))
+
+    def test_moderator_role(self):
+        r = Role.query.filter_by(name='Moderator').first()
+        u = User(email='john@example.com', password='cat', role=r)
+        self.assertTrue(u.can(Permission.FOLLOW))
+        self.assertTrue(u.can(Permission.COMMENT))
+        self.assertTrue(u.can(Permission.WRITE))
+        self.assertTrue(u.can(Permission.MODERATE))
+        self.assertFalse(u.can(Permission.ADMIN))
+    
+    def test_administrator_role(self):
+        r = Role.query.filter_by(name='Administrator').first()
+        u = User(email='john@example.com', password='cat', role=r)
+        self.assertTrue(u.can(Permission.FOLLOW))
+        self.assertTrue(u.can(Permission.COMMENT))
+        self.assertTrue(u.can(Permission.WRITE))
+        self.assertTrue(u.can(Permission.MODERATE))
+        self.assertTrue(u.can(Permission.ADMIN))
 
     def test_anonymous_user(self):
         u = AnonymousUser()
         self.assertFalse(u.can(Permission.FOLLOW))
+        self.assertFalse(u.can(Permission.COMMENT))
+        self.assertFalse(u.can(Permission.WRITE))
+        self.assertFalse(u.can(Permission.MODERATE))
+        self.assertFalse(u.can(Permission.ADMIN))
 
     def test_timestamps(self):
         u = User(password='cat')
@@ -143,15 +166,11 @@ class UserModelTestCase(unittest.TestCase):
             gravatar_256 = u.gravatar(size=256)
             gravatar_pg = u.gravatar(rating='pg')
             gravatar_retro = u.gravatar(default='retro')
-        with self.app.test_request_context('/', base_url='https://example.com'):
-            gravatar_ssl = u.gravatar()
-        self.assertTrue('http://www.gravatar.com/avatar/' +
+        self.assertTrue('https://secure.gravatar.com/avatar/' +
                         'd4c74594d841139328695756648b6bd6'in gravatar)
         self.assertTrue('s=256' in gravatar_256)
         self.assertTrue('r=pg' in gravatar_pg)
         self.assertTrue('d=retro' in gravatar_retro)
-        self.assertTrue('https://secure.gravatar.com/avatar/' +
-                        'd4c74594d841139328695756648b6bd6' in gravatar_ssl)
 
 
 
