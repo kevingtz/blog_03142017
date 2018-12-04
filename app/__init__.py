@@ -6,6 +6,7 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from flask_pagedown import PageDown
 from config import config
 
 # HERE WE GONNA CREATED THE EXTENSION BUT UNINITIALIZED
@@ -13,6 +14,8 @@ bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
+pagedown = PageDown()
+
 login_manager = LoginManager()  # THIS CREATE A INSTANCE OF THE LOGIN MANAGER CLASS
 login_manager.session_protection = 'strong'  # [NONE, BASIC, STRONG] THESE ARE THE SECURITY LEVELS
 # SETTING TO STRONG WILL KEEP TRACK THE CLIENT'S IP ADDRESS AND BROWSER AGENT AND WILL LOG THE USER OUT
@@ -32,6 +35,7 @@ def create_app(config_name):
     moment.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+    pagedown.init_app(app)
 
     # IMPORTING THE 'MAIN_BLUEPRINT'
     from .main import main as main_blueprint  # AVOIDING THE CIRCULAR DEPENDENCIES

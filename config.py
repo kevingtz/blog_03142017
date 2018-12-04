@@ -17,6 +17,7 @@ class Config:  # CREATED THE MAIN CONFIG CLASS
     BLOG_MAIL_SUBJECT_PREFIX = '[MAIL]'  # PREFIX
     BLOG_MAIL_SENDER = 'kazevtrinid@gmail.com'  # ADMIN MAIL
     BLOG_ADMIN = 'kevingtz0907@gmail.com'  # ADMIN
+    BLOG_POSTS_PER_PAGE = 20
 
     @staticmethod
     def init_app(app):  # METHOD USE TO INIT THE APP

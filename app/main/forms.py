@@ -2,6 +2,7 @@
 
 # FIRST AT ALL WE NEED TO IMPORT WTF IN ORDER TO UDE FORMS AND ALSO WE GONNA NEED DATA VALIDATORS
 from flask_wtf import FlaskForm
+from flask_pagedown.fields import PageDownField
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField, ValidationError
 from wtforms.validators import DataRequired, Length, Email, Regexp
 from ..models import User, Role
@@ -47,6 +48,6 @@ class EditProfileAdminForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    body = TextAreaField('Do you want to share something?', validators=[DataRequired()])
+    body = PageDownField('Do you want to share something?', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
