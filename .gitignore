@@ -93,6 +93,7 @@ blog_03142017.iml
 blog_data-dev.sqlite
 *.sqlite
 migrations
+.vscode/
 
 # app.yaml
 *.yaml
