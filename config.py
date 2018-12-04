@@ -23,6 +23,36 @@ class Config:  # CREATED THE MAIN CONFIG CLASS
         pass
 
 
+# Postgres config
+
+# THIS IS THE LOCAL POSTGRES CONFIGURATION
+POSTGRES = {
+    'user': 'KevinGTZ',
+    'pw': 'Alexander0911',
+    'host': 'localhost',
+    'port': '5432',
+    'db':'develop-blog'
+}
+
+# THIS IS THE LOCAL TEST POSTGRES CONFIGURATION
+POSTGRES_TEST = {
+    'user': 'KevinGTZ',
+    'pw': 'Alexander0911',
+    'host': 'localhost',
+    'port': '5432',
+    'db':'testing-blog'
+}
+
+# THIS IS THE GCP POSTGRES CONFIGURATION IN THE PROJECT "mx-kloyola-xertica"
+POSTGRES_GCP = {
+    'user': os.environ.get('DB_USER'),
+    'pw': os.environ.get('USER_PW'),
+    'host': os.environ.get('DB_HOST'),
+    'port': '5433',
+    'db': 'production-blog-flask'
+}
+
+
 # THE DIFFERENT CONFIGURATION CLASSES
 
 
@@ -36,11 +66,12 @@ class TestingConfig(Config):  # TEST CONFIG
     TESTING = True
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'blog_data-test.sqlite')
+                              'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_TEST['user'],pw=POSTGRES_TEST['pw'],url=POSTGRES_TEST['host'],db=POSTGRES_TEST['db'])  # THIS NEED A SET OF CONFIGURATION VARIABLES 
+
 
 
 class ProductionConfig(Config):  # PRODUCTION CONFIG
-    DEBUG = True
+    DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
 
 # HERE WE ASSIGN THE DIFFERENT CLASSES TO A DICTIONARY IN ORDER TO USE EACH CONFIG CLASS
