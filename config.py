@@ -67,16 +67,23 @@ class TestingConfig(Config):  # TEST CONFIG
     TESTING = True
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-                              'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_TEST['user'],pw=POSTGRES_TEST['pw'],url=POSTGRES_TEST['host'],db=POSTGRES_TEST['db'])  # THIS NEED A SET OF CONFIGURATION VARIABLES 
-
+                              'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_TEST['user'],pw=POSTGRES_TEST['pw'],url=POSTGRES_TEST['host'],db=POSTGRES_TEST['db'])  # THIS NEED A SET OF CONFIGURATION VARIABLES
 
 
 class ProductionConfig(Config):  # PRODUCTION CONFIG
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
 
+
+class DockerConfig(ProductionConfig):
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
+
+
 # HERE WE ASSIGN THE DIFFERENT CLASSES TO A DICTIONARY IN ORDER TO USE EACH CONFIG CLASS
 config = {
+    'docker': DockerConfig,
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
